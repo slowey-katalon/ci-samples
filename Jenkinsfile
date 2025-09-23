@@ -1,30 +1,53 @@
 pipeline {
     agent any
     environment {
-        KATALON_API_KEY = credentials('katalon-api-key')
+        KATALON_API_KEY = credentials('katalon-api-key') // Set this credential in Jenkins
+        KATALON_APP_PATH = '/Applications/Katalon Studio Engine v10.3.1.app/Contents'
     }
     stages {
-        stage('Test') {
+        stage('Check Katalon') {
             steps {
                 sh '''
-                    katalonc -noSplash -runMode=console \
-                    -projectPath="$(pwd)" \
-                    -retry=0 -testSuitePath="Test Suites/TS_RegressionTest" \
-                    -executionProfile="default" \
-                    -browserType="Chrome (headless)" \
-                    -apiKey=${KATALON_API_KEY}
+                    echo "Checking Katalon installation..."
+                    ls -la "${KATALON_APP_PATH}/MacOS/"
+                    "${KATALON_APP_PATH}/MacOS/katalonc" --version || echo "Version check failed, but continuing..."
                 '''
+            }
+        }
+        stage('Test') {
+            steps {
+                dir('<your-project-folder>') {  // Replace with your actual project folder name
+                    sh '''
+                        "${KATALON_APP_PATH}/MacOS/katalonc" \
+                        -noSplash \
+                        -runMode=console \
+                        -projectPath="$(pwd)" \
+                        -retry=0 \
+                        -statusDelay=15 \
+                        -testSuitePath="Test Suites/TS_RegressionTest" \
+                        -browserType="Chrome" \
+                        -apiKey="${KATALON_API_KEY}"
+                    '''
+                }
             }
         }
     }
     post {
         always {
             script {
-                if (fileExists('Reports')) {
-                    archiveArtifacts artifacts: 'Reports/**/*.*', fingerprint: true, allowEmptyArchive: true
-                }
-                if (fileExists('Reports/**/JUnit_Report.xml')) {
-                    junit 'Reports/**/JUnit_Report.xml'
+                // Check for reports in the project folder
+                dir('<your-project-folder>') {  // Replace with your actual project folder name
+                    if (fileExists('Reports')) {
+                        archiveArtifacts artifacts: 'Reports/**/*.*', fingerprint: true, allowEmptyArchive: true
+                    } else {
+                        echo 'No Reports directory found'
+                    }
+                    
+                    if (fileExists('Reports/**/JUnit_Report.xml')) {
+                        junit 'Reports/**/JUnit_Report.xml'
+                    } else {
+                        echo 'No JUnit report files found'
+                    }
                 }
             }
         }
