@@ -1,13 +1,13 @@
 pipeline {
     agent any
     environment {
-        KATALON_API_KEY = credentials('katalon-api-key') // Set this credential in Jenkins
+        KATALON_API_KEY = credentials('katalon-api-key')
         KATALON_APP_PATH = '/Applications/Katalon Studio Engine v10.3.1.app/Contents'
     }
     stages {
         stage('Test') {
             steps {
-                dir('<your-project-folder>') {  // Replace with your actual project folder name
+                dir('.') {  
                     sh '''
                         "${KATALON_APP_PATH}/MacOS/katalonc" \
                         -noSplash \
@@ -19,6 +19,24 @@ pipeline {
                         -browserType="Chrome" \
                         -apiKey="${KATALON_API_KEY}"
                     '''
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                // Archive reports from root directory
+                if (fileExists('Reports')) {
+                    archiveArtifacts artifacts: 'Reports/**/*.*', fingerprint: true, allowEmptyArchive: true
+                } else {
+                    echo 'No Reports directory found'
+                }
+                
+                if (fileExists('Reports/**/JUnit_Report.xml')) {
+                    junit 'Reports/**/JUnit_Report.xml'
+                } else {
+                    echo 'No JUnit report files found'
                 }
             }
         }
