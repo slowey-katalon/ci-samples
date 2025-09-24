@@ -5,15 +5,6 @@ pipeline {
         KATALON_APP_PATH = '/Applications/Katalon Studio Engine v10.3.1.app/Contents'
     }
     stages {
-        stage('Check Katalon') {
-            steps {
-                sh '''
-                    echo "Checking Katalon installation..."
-                    ls -la "${KATALON_APP_PATH}/MacOS/"
-                    "${KATALON_APP_PATH}/MacOS/katalonc" --version || echo "Version check failed, but continuing..."
-                '''
-            }
-        }
         stage('Test') {
             steps {
                 dir('<your-project-folder>') {  // Replace with your actual project folder name
@@ -28,26 +19,6 @@ pipeline {
                         -browserType="Chrome" \
                         -apiKey="${KATALON_API_KEY}"
                     '''
-                }
-            }
-        }
-    }
-    post {
-        always {
-            script {
-                // Check for reports in the project folder
-                dir('<your-project-folder>') {  // Replace with your actual project folder name
-                    if (fileExists('Reports')) {
-                        archiveArtifacts artifacts: 'Reports/**/*.*', fingerprint: true, allowEmptyArchive: true
-                    } else {
-                        echo 'No Reports directory found'
-                    }
-                    
-                    if (fileExists('Reports/**/JUnit_Report.xml')) {
-                        junit 'Reports/**/JUnit_Report.xml'
-                    } else {
-                        echo 'No JUnit report files found'
-                    }
                 }
             }
         }
