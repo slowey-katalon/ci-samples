@@ -7,7 +7,7 @@
    <freeLicense>false</freeLicense>
    <migratedVersion>5.9.0</migratedVersion>
    <pageLoadTimeout>0</pageLoadTimeout>
-   <projectFileLocation>/Users/phuc.truong/Documents/Code/ci-samples/test.prj</projectFileLocation>
+   <projectFileLocation>/Users/phuc.truong/git/ci-samples/test.prj</projectFileLocation>
    <sourceContent>
       <sourceFolderList>
          <sourceFolderConfiguration>
