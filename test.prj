@@ -6,6 +6,8 @@
    <UUID>c84650ee-cb5e-4a36-b244-5c4df96b316d</UUID>
    <freeLicense>false</freeLicense>
    <migratedVersion>5.9.0</migratedVersion>
+   <modifiedEdition>ENTERPRISE</modifiedEdition>
+   <modifiedVersion>11.1.3</modifiedVersion>
    <pageLoadTimeout>0</pageLoadTimeout>
    <projectFileLocation>/Users/phuc.truong/git/ci-samples/test.prj</projectFileLocation>
    <sourceContent>
